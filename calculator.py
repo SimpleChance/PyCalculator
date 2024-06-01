@@ -19,6 +19,7 @@ def _divide(x: float, y: float) -> float:
     try:
         return x / y
     except ZeroDivisionError:
+        print(f"\nDivide by Zero Error: Input - {x, y}")
         return -1.0
 
 
@@ -30,13 +31,14 @@ def _xrooty(x: float, y: float) -> float:
     try:
         return x ** (1.0/y)
     except ZeroDivisionError:
+        print(f"\nDivide by Zero Error: Input - {x, y}")
         return -1.0
 
 
 class PyCalc(object):
     def __init__(self):
         self.history: list[str] = []
-        self.supported_operations = ["add, subtract, multiply, divide, pow, nroot"]
+        self.supported_operations: list[str] = ["add, subtract, multiply, divide, pow, nroot"]
 
     def __repr__(self):
         return f"PyCalc Object -\nOperations: add, subtract, multiply, divide, pow, nroot\nHistory: {self.history}"
