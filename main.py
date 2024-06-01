@@ -6,6 +6,10 @@ import pycalc
 
 
 def display_menu() -> None:
+    """
+    Prints the main menu for PyCalc.
+    :return: None
+    """
     print("\n*************************\n"
           "*         Menu          *\n"
           "*************************")
@@ -22,6 +26,10 @@ def display_menu() -> None:
 
 
 def main():
+    """
+    Main simulation loop for the command line version of PyCalc.
+    :return: None
+    """
     input_: str
     history: list[str] = []
 
@@ -79,6 +87,7 @@ def main():
             case _:
                 print(f"\nInvalid selection: {input_}")
     exit()
+    return
 
 
 if __name__ == '__main__':
