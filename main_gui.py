@@ -36,6 +36,14 @@ def initialize_ui_buttons() -> tuple[dict[str, UIButton], dict[str, UIButton]]:
     new_button = UIButton(pg.Rect(pos, button_size), text='=')
     operations_dictionary['='] = new_button
 
+    pos = (button_size[0]*3, 3 * button_size[1] + y_offset)
+    new_button = UIButton(pg.Rect(pos, button_size), text='+/-')
+    button_dictionary['+/-'] = new_button
+
+    pos = (button_size[0] * 4, 3 * button_size[1] + y_offset)
+    new_button = UIButton(pg.Rect(pos, button_size), text='CE')
+    operations_dictionary['CE'] = new_button
+
     # Operations
     tmp = ['x^y', 'yroot(x)', '*', '/', '+', '-']
     _ = 0
@@ -69,6 +77,8 @@ def run() -> None:
 
     input_str = ''
     input_length = 0
+    prev_op = ''
+    negative_flag = False
     while True:
         print(input_str)
         dt = clock.tick(max_fps) / 1000.0
@@ -79,14 +89,49 @@ def run() -> None:
 
             if event.type == pg_gui.UI_BUTTON_PRESSED:
                 input_length = len(input_str)
+                # Numerics
                 if event.ui_element in button_dictionary.values():
                     if event.ui_element == button_dictionary['0'] and input_length == 1 and input_str[0] == '0':
                         pass
                     elif event.ui_element == button_dictionary['.'] and '.' in input_str:
                         pass
+                    elif event.ui_element == button_dictionary['+/-']:
+                        if negative_flag:
+                            input_str = input_str.replace('-', '')
+                        else:
+                            input_str = '-' + input_str
+                        negative_flag = not negative_flag
                     else:
                         position = list(button_dictionary.values()).index(event.ui_element)
                         input_str += list(button_dictionary.keys())[position]
+                # Operations
+                if event.ui_element in operations_dictionary.values():
+                    if event.ui_element == operations_dictionary['=']:
+                        pass
+                    elif event.ui_element == operations_dictionary['CE']:
+                        input_str = ''
+                        prev_op = ''
+                    else:
+                        position = list(operations_dictionary.values()).index(event.ui_element)
+                        prev_op = list(operations_dictionary.keys())[position]
+
+                    match prev_op:
+                        case '+':
+                            pass
+                        case '-':
+                            pass
+                        case '*':
+                            pass
+                        case '/':
+                            pass
+                        case 'x^y':
+                            pass
+                        case 'yroot(x)':
+                            pass
+                        case _:
+                            pass
+
+
 
             ui_manager.process_events(event)
 
