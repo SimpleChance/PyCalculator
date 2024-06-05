@@ -128,7 +128,9 @@ def run() -> None:
 
                 elif event.ui_element in operations_dictionary.values():
                     position = list(operations_dictionary.values()).index(event.ui_element)
-                    prev_op = list(operations_dictionary.keys())[position]
+                    tmp = list(operations_dictionary.keys())[position]
+                    if tmp != '=':
+                        prev_op = tmp
                     print(prev_op)
                     if input_str[-1] == '.':
                         input_str += '0'
@@ -136,9 +138,8 @@ def run() -> None:
                         x = float(input_str)
                         input_str = ''
                         continue
-                    else:
+                    elif input_length != 0:
                         y = float(input_str)
-                        input_str = ''
 
                     if event.ui_element == operations_dictionary['+']:
                         x = pycalc.add(x, y)
@@ -154,6 +155,7 @@ def run() -> None:
                         x = pycalc.xrooty(x, y)
 
                     elif event.ui_element == operations_dictionary['='] and x is not None:
+                        input_str = ""
                         match prev_op:
                             case '+':
                                 x = pycalc.add(x, y)
@@ -171,6 +173,7 @@ def run() -> None:
                                 print("Something went terribly wring")
 
                         display_str = str(x)
+            print(display_str, x, y)
 
             ui_manager.process_events(event)
 
