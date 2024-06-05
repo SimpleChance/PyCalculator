@@ -123,7 +123,7 @@ def run() -> None:
                         input_str += '.'
                     display_str = input_str
 
-                elif input_length == 0:
+                if input_length == 0:
                     pass
 
                 elif event.ui_element in operations_dictionary.values():
@@ -136,7 +136,7 @@ def run() -> None:
                         input_str += '0'
                     if x is None:
                         x = float(input_str)
-                        input_str = ''
+                        input_str = '0'
                         continue
                     elif input_length != 0:
                         y = float(input_str)
@@ -155,9 +155,10 @@ def run() -> None:
                         x = pycalc.xrooty(x, y)
 
                     elif event.ui_element == operations_dictionary['='] and x is not None:
-                        input_str = ""
+                        print('HERE')
                         match prev_op:
                             case '+':
+                                print('here')
                                 x = pycalc.add(x, y)
                             case '-':
                                 x = pycalc.subtract(x, y)
@@ -173,7 +174,7 @@ def run() -> None:
                                 print("Something went terribly wring")
 
                         display_str = str(x)
-            print(display_str, x, y)
+            print(display_str, input_str, x, y)
 
             ui_manager.process_events(event)
 
