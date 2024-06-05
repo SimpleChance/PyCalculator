@@ -8,9 +8,9 @@ from pygame_gui.elements import UIButton
 import pycalc
 
 
-def initialize_ui_buttons() -> dict[str, UIButton]:
-    button_dictionary = dict.fromkeys(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+/-', '=', 'CE', '+',
-                                       '-', '*', '/', 'x^y', 'yroot(x)'])
+def initialize_ui_buttons() -> tuple[dict[str, UIButton], dict[str, UIButton]]:
+    button_dictionary = dict.fromkeys(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '+/-'])
+    operations_dictionary = dict.fromkeys(['=', 'CE', '+', '-', '*', '/', 'x^y', 'yroot(x)'])
     y_offset = 100
 
     # Numerics
@@ -34,7 +34,7 @@ def initialize_ui_buttons() -> dict[str, UIButton]:
 
     pos = (button_size[0]*2, 3*button_size[1] + y_offset)
     new_button = UIButton(pg.Rect(pos, button_size), text='=')
-    button_dictionary['='] = new_button
+    operations_dictionary['='] = new_button
 
     # Operations
     tmp = ['x^y', 'yroot(x)', '*', '/', '+', '-']
@@ -43,10 +43,10 @@ def initialize_ui_buttons() -> dict[str, UIButton]:
         for j in range(3, 5):
             pos = (j * button_size[0], i * button_size[1] + y_offset)
             new_button = UIButton(pg.Rect(pos, button_size), text=tmp[_])
-            button_dictionary[tmp[_]] = new_button
+            operations_dictionary[tmp[_]] = new_button
             _ += 1
 
-    return button_dictionary
+    return button_dictionary, operations_dictionary
 
 
 def run() -> None:
@@ -61,65 +61,121 @@ def run() -> None:
 
     ui_manager = pg_gui.UIManager(window_dimensions)
 
-    button_dictionary = initialize_ui_buttons()
+    button_dictionary, operations_dictionary = initialize_ui_buttons()
 
     clock = pg.time.Clock()
     max_fps = 60
     dt: float
 
     display_str = ""
-    input_length = 0
-    x: float = 0
-    y: float
-    dec = False
+    input_str = ""
+    prev_op = ''
+    x = None
+    y = None
     while True:
         dt = clock.tick(max_fps) / 1000.0
+        input_length = len(input_str)
         for event in pg.event.get():
             if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
                 pg.quit()
                 exit()
 
             if event.type == pg_gui.UI_BUTTON_PRESSED:
-                input_length = len(display_str)
                 if event.ui_element == button_dictionary['0']:
-                    if input_length == 1 and display_str[0] == '0':
+                    if input_length == 1 and input_str[0] == '0':
                         pass
                     else:
-                        display_str += '0'
-                if event.ui_element == button_dictionary['1']:
-                    display_str += '1'
-                if event.ui_element == button_dictionary['2']:
-                    display_str += '2'
-                if event.ui_element == button_dictionary['3']:
-                    display_str += '3'
-                if event.ui_element == button_dictionary['4']:
-                    display_str += '4'
-                if event.ui_element == button_dictionary['5']:
-                    display_str += '5'
-                if event.ui_element == button_dictionary['6']:
-                    display_str += '6'
-                if event.ui_element == button_dictionary['7']:
-                    display_str += '7'
-                if event.ui_element == button_dictionary['8']:
-                    display_str += '8'
-                if event.ui_element == button_dictionary['9']:
-                    display_str += '9'
+                        input_str += '0'
+                        display_str = input_str
+                elif event.ui_element == button_dictionary['1']:
+                    input_str += '1'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['2']:
+                    input_str += '2'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['3']:
+                    input_str += '3'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['4']:
+                    input_str += '4'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['5']:
+                    input_str += '5'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['6']:
+                    input_str += '6'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['7']:
+                    input_str += '7'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['8']:
+                    input_str += '8'
+                    display_str = input_str
+                elif event.ui_element == button_dictionary['9']:
+                    input_str += '9'
+                    display_str = input_str
 
-                if event.ui_element == button_dictionary['.'] and not dec:
+                elif event.ui_element == button_dictionary['.'] and '.' not in input_str:
                     if input_length == 0:
-                        display_str += '0'
-                        display_str += '.'
-                        dec = True
+                        input_str += '0'
+                        input_str += '.'
+                    else:
+                        input_str += '.'
+                    display_str = input_str
 
-                if input_length == 0:
+                elif input_length == 0:
                     pass
-                else:
-                    if event.ui_element == button_dictionary['+']:
-                        if display_str[-1] == '.':
-                            display_str = display_str[0::-1]
 
+                elif event.ui_element in operations_dictionary.values():
+                    position = list(operations_dictionary.values()).index(event.ui_element)
+                    prev_op = list(operations_dictionary.keys())[position]
+                    print(prev_op)
+                    if input_str[-1] == '.':
+                        input_str += '0'
+                    if x is None:
+                        x = float(input_str)
+                        input_str = ''
+                        continue
+                    else:
+                        y = float(input_str)
+                        input_str = ''
+
+                    if event.ui_element == operations_dictionary['+']:
+                        x = pycalc.add(x, y)
+                    elif event.ui_element == operations_dictionary['-']:
+                        x = pycalc.subtract(x, y)
+                    elif event.ui_element == operations_dictionary['*']:
+                        x = pycalc.multiply(x, y)
+                    elif event.ui_element == operations_dictionary['/']:
+                        x = pycalc.divide(x, y)
+                    elif event.ui_element == operations_dictionary['x^y']:
+                        x = pycalc.xpowy(x, y)
+                    elif event.ui_element == operations_dictionary['yroot(x)']:
+                        x = pycalc.xrooty(x, y)
+
+                    elif event.ui_element == operations_dictionary['='] and x is not None:
+                        match prev_op:
+                            case '+':
+                                x = pycalc.add(x, y)
+                            case '-':
+                                x = pycalc.subtract(x, y)
+                            case '*':
+                                x = pycalc.multiply(x, y)
+                            case '/':
+                                x = pycalc.divide(x, y)
+                            case 'x^y':
+                                x = pycalc.xpowy(x, y)
+                            case 'yroot(x)':
+                                x = pycalc.xrooty(x, y)
+                            case _:
+                                print("Something went terribly wring")
+
+                        display_str = str(x)
 
             ui_manager.process_events(event)
+
+        # print(display_str)
+
         ui_manager.update(dt)
 
         window_surface.blit(background_surface, (0, 0))
