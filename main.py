@@ -87,7 +87,6 @@ def main():
             case _:
                 print(f"\nInvalid selection: {input_}")
     exit()
-    return
 
 
 if __name__ == '__main__':
